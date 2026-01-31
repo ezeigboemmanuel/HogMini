@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/login/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -130,7 +129,6 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            {/* <FlagIcon className="w-8 h-8" /> */}
             <span className="text-xl font-semibold tracking-tight">
               HogMini
             </span>
@@ -145,7 +143,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Social login - placed before email signin */}
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" type="button" className="h-11 flex items-center justify-center">
               <GoogleIcon className="w-5 h-5 size-6" />

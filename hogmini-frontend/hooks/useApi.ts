@@ -1,4 +1,3 @@
-// app/hooks/useApi.ts
 'use client';
 
 import { useAuth } from "@/app/contexts/AuthContext";
@@ -15,7 +14,7 @@ export function useApi() {
       ...options.headers,
     };
 
-    const response = await fetch(`http://localhost:4000${url}`, {
+    const response = await fetch(`http://localhost:3001${url}`, {
       ...options,
       headers,
     });

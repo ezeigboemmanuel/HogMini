@@ -48,6 +48,7 @@ export default function ResetPasswordPage() {
         }
       } catch (err) {
         setError("Failed to verify reset link");
+        console.log(err);
       } finally {
         setValidating(false);
       }
@@ -94,6 +95,7 @@ export default function ResetPasswordPage() {
     } catch (err) {
       setError("Failed to reset password. Please try again.");
       toast.error("Failed to reset password. Please try again.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
