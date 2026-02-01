@@ -56,21 +56,21 @@ export default function Hero() {
         <form
           id="signup"
           onSubmit={handleSubmit}
-          className="max-w-xl mx-auto flex gap-3 items-center"
+          className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3 items-center"
         >
           <Input
             type="email"
             placeholder="you@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 bg-white text-black rounded-full h-12 px-4 shadow-sm border border-gray-200 placeholder-gray-400"
+            className="w-full bg-white text-black rounded-full h-12 px-4 shadow-sm border border-gray-200 placeholder-gray-400"
             required
           />
           <Button
             type="submit"
             disabled={loading}
             size="lg"
-            className="rounded-full h-12 px-6 bg-black text-white hover:opacity-95 shadow-md"
+            className="w-full sm:w-auto rounded-full h-12 px-6 bg-black text-white hover:opacity-95 shadow-md"
           >
             {loading ? "Joining..." : "Join the Waitlist"}
           </Button>
