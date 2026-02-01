@@ -20,10 +20,11 @@ export default function ClientNavbarController({
   ];
 
   const hideNavbar = !!pathname && authPaths.some((p) => pathname.startsWith(p));
+  const minimalNavbar = !!pathname && pathname.startsWith("/waitlist");
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <Navbar minimal={minimalNavbar} />}
       {children}
     </>
   );

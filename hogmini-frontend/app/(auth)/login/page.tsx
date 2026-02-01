@@ -144,12 +144,22 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" type="button" className="h-11 flex items-center justify-center">
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="h-11 flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3001/api/auth/google'}
+            >
               <GoogleIcon className="w-5 h-5 size-6" />
               Google
             </Button>
 
-            <Button variant="outline" type="button" className="h-11 flex items-center justify-center">
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="h-11 flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3001/api/auth/github'}
+            >
               <GitHubIcon  className="w-5 h-5 size-6" />
               GitHub
             </Button>
