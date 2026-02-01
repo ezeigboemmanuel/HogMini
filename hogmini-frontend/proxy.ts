@@ -11,6 +11,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/waitlist") ||
     pathname.startsWith("/oauth") ||
     pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/opengraph-image") ||
     pathname.includes(".") // allow static files like sw, robots, etc.
   ) {
     return NextResponse.next();
