@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function OAuthCallbackPage() {
+function OAuthCallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -17,9 +17,7 @@ export default function OAuthCallbackPage() {
     }
 
     if (token) {
-      // Store the token
       localStorage.setItem("token", token);
-      // Redirect to dashboard
       router.push("/dashboard");
     } else {
       router.push("/login?error=no_token");
@@ -27,11 +25,19 @@ export default function OAuthCallbackPage() {
   }, [searchParams, router]);
 
   return (
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-gray-600">Completing sign in...</p>
+    </div>
+  );
+}
+
+export default function OAuthCallbackPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Completing sign in...</p>
-      </div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <OAuthCallbackHandler />
+      </Suspense>
     </div>
   );
 }

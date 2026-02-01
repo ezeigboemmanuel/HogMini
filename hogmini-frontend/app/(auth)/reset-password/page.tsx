@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import GitHubIcon from "@/components/icons/GitHubIcon";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -76,11 +76,14 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
+      const response = await fetch(
+        "http://localhost:3001/api/auth/reset-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, password }),
+        },
+      );
 
       const data = await response.json();
 
@@ -117,9 +120,16 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
           <div className="text-red-600 text-5xl mb-4">✗</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Invalid Reset Link</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Invalid Reset Link
+          </h2>
           <p className="text-gray-600 mb-6">{error}</p>
-          <Link href="/forgot-password" className="inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Request New Link</Link>
+          <Link
+            href="/forgot-password"
+            className="inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            Request New Link
+          </Link>
         </div>
       </div>
     );
@@ -130,10 +140,22 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
           <div className="text-green-600 text-5xl mb-4">✓</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful!</h2>
-          <p className="text-gray-600 mb-6">Your password has been reset successfully. You can now login with your new password.</p>
-          <p className="text-sm text-gray-500 mb-4">Redirecting to login page...</p>
-          <Link href="/login" className="inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Go to Login</Link>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Password Reset Successful!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Your password has been reset successfully. You can now login with
+            your new password.
+          </p>
+          <p className="text-sm text-gray-500 mb-4">
+            Redirecting to login page...
+          </p>
+          <Link
+            href="/login"
+            className="inline-block px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            Go to Login
+          </Link>
         </div>
       </div>
     );
@@ -142,49 +164,166 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex bg-white">
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white">
-        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.06)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")" }} />
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.06)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
+          }}
+        />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-100 rounded-full blur-[128px]" />
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <div className="flex items-center gap-3"><span className="text-2xl font-semibold tracking-tight">HogMini</span></div>
-          <div className="max-w-md">
-            <h2 className="text-4xl font-semibold tracking-tight leading-tight mb-4">Secure your account</h2>
-            <p className="text-gray-600 text-lg leading-relaxed">Set a new password for your account to regain access.</p>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-semibold tracking-tight">
+              HogMini
+            </span>
           </div>
-          <div className="text-sm text-gray-500">Need help? Contact support.</div>
+          <div className="max-w-md">
+            <h2 className="text-4xl font-semibold tracking-tight leading-tight mb-4">
+              Secure your account
+            </h2>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              Set a new password for your account to regain access.
+            </p>
+          </div>
+          <div className="text-sm text-gray-500">
+            Need help? Contact support.
+          </div>
         </div>
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="flex items-center gap-3 mb-8 lg:hidden"><span className="text-xl font-semibold tracking-tight">HogMini</span></div>
-          <div className="mb-6"><h1 className="text-2xl font-semibold tracking-tight mb-1">Reset your password</h1>{userEmail && (<p className="text-sm text-gray-600">for <strong>{userEmail}</strong></p>)}</div>
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
+            <span className="text-xl font-semibold tracking-tight">
+              HogMini
+            </span>
+          </div>
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold tracking-tight mb-1">
+              Reset your password
+            </h1>
+            {userEmail && (
+              <p className="text-sm text-gray-600">
+                for <strong>{userEmail}</strong>
+              </p>
+            )}
+          </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-4"><Button variant="outline" type="button" className="h-11 flex items-center justify-center"><GoogleIcon className="w-5 h-5 mr-2"/>Google</Button><Button variant="outline" type="button" className="h-11 flex items-center justify-center"><GitHubIcon className="w-5 h-5 mr-2"/>GitHub</Button></div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <Button
+              variant="outline"
+              type="button"
+              className="h-11 flex items-center justify-center"
+            >
+              <GoogleIcon className="w-5 h-5 mr-2" />
+              Google
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              className="h-11 flex items-center justify-center"
+            >
+              <GitHubIcon className="w-5 h-5 mr-2" />
+              GitHub
+            </Button>
+          </div>
 
-          <div className="relative my-6"><div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"/></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-gray-500">Or continue with email</span></div></div>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-3 text-gray-500">
+                Or continue with email
+              </span>
+            </div>
+          </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {error && (<div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">{error}</div>)}
+            {error && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">New password</label>
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                New password
+              </label>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} placeholder="New password (min 6 characters)" value={password} onChange={(e)=>setPassword(e.target.value)} required className="pr-10" />
-                <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">{showPassword? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}</button>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="New password (min 6 characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirm-password" className="text-sm font-medium text-gray-700">Confirm password</label>
-              <Input id="confirm-password" type={showPassword ? "text" : "password"} placeholder="Confirm new password" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)} required />
+              <label
+                htmlFor="confirm-password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Confirm password
+              </label>
+              <Input
+                id="confirm-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
             </div>
 
-            <div><Button type="submit" className="w-full" disabled={loading}>{loading? 'Resetting...' : 'Reset Password'}</Button></div>
+            <div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Resetting..." : "Reset Password"}
+              </Button>
+            </div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">Remembered? <Link href="/login" className="text-indigo-600 hover:underline">Back to Login</Link></p>
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Remembered?{" "}
+            <Link href="/login" className="text-indigo-600 hover:underline">
+              Back to Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
