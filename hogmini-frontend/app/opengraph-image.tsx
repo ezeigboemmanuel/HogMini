@@ -30,7 +30,7 @@ export default async function Image() {
         {/* Main Brand Title */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
           <h1 style={{ fontSize: 80, fontWeight: 900, letterSpacing: '-0.05em', margin: 0 }}>
-            HOGMINI
+            HogMini
           </h1>
           <p style={{ fontSize: 24, fontWeight: 400, color: '#666', marginTop: '10px', letterSpacing: '0.1em' }}>
             DECOUPLE DEPLOYMENT. CONTROL RELEASE.
@@ -45,7 +45,7 @@ export default async function Image() {
             width: '800px',
             border: '2px solid black',
             backgroundColor: 'white',
-            boxShadow: '20px 20px 0px 0px #000', // Hard industrial shadow
+            boxShadow: '20px 20px 0px 0px #000', 
           }}
         >
           {/* Window Header */}
@@ -72,7 +72,7 @@ export default async function Image() {
                   borderBottom: i === 2 ? 'none' : '1px solid #eee'
                 }}
               >
-                <span style={{ fontSize: 20, fontWeight: 700, fontFamily: 'monospace' }}>{feature.label}</span>
+                <span style={{ fontSize: 20, fontWeight: 700 }}>{feature.label}</span>
                 {/* Apple Style Toggle */}
                 <div style={{ 
                   width: 50, 
