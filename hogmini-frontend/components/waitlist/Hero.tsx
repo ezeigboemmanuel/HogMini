@@ -47,7 +47,7 @@ export default function Hero() {
         <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3">
           Feature flags for teams
           <br />
-          who ship fast..
+          who ship fast.
         </h1>
         <p className="text-sm text-gray-700 max-w-2xl mx-auto mb-6">
           Ship with confidence. Control every release.
