@@ -3,6 +3,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -28,41 +29,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="text-xl font-bold">Dashboard</div>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-700">
-                {user.name || user.email}
-              </span>
-              <button
-                onClick={logout}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-3xl mx-auto py-12 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            <h1 className="text-2xl font-bold mb-4">
-              Welcome, {user.name || user.email}!
-            </h1>
-            <p className="text-gray-600">
-              You are now logged in. This is a protected page.
-            </p>
-            
-            <div className="mt-6 bg-white p-4 rounded shadow">
-              <h2 className="font-semibold mb-2">User Info:</h2>
-              <p><strong>ID:</strong> {user.id}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              {user.name && <p><strong>Name:</strong> {user.name}</p>}
-            </div>
+          <div className="bg-white rounded-lg p-8 shadow">
+            <h1 className="text-2xl font-bold mb-2">Welcome, {user.name || user.email}!</h1>
+            <p className="text-gray-600 mb-6">This is your dashboard.</p>
+
+            <Link href="/create">
+              <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                Create Organization
+              </button>
+            </Link>
           </div>
         </div>
       </main>

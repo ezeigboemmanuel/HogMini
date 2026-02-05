@@ -13,7 +13,8 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,42 +23,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is logged in on mount
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchUser(token);
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchUser = async (token: string) => {
+  const fetchUser = async () => {
     try {
       const res = await fetch("http://localhost:3001/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
       } else {
-        localStorage.removeItem("token");
+        setUser(null);
       }
     } catch (error) {
       console.error("Failed to fetch user", error);
-      localStorage.removeItem("token");
+      setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   const login = async (email: string, password: string) => {
     const res = await fetch("http://localhost:3001/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -67,7 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const data = await res.json();
-    localStorage.setItem("token", data.token);
     setUser(data.user);
   };
 
@@ -75,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch("http://localhost:3001/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password, name }),
     });
 
@@ -83,18 +77,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(error.error || "Registration failed");
     }
 
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
+    // Registration doesn't set cookie, user must verify email then login
+    // Just return without setting user
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    await fetch("http://localhost:3001/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    await fetchUser();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
