@@ -32,6 +32,10 @@ model User {
   updatedAt         DateTime  @updatedAt
   // Link User to Projects
   projects  Project[]
+  // Organization memberships (roles like OWNER, ADMIN, MEMBER)
+  organizationMemberships OrganizationMembership[]
+  // Organizations created by this user
+  createdOrganizations Organization[]
 }
 
 model Project {
@@ -41,10 +45,54 @@ model Project {
   createdAt DateTime @default(now())
 
   // Ownership
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // A project may be owned by a user (personal) or belong to an organization.
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   flags FeatureFlag[]
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Projects owned by this organization
+  projects Project[]
+
+  // Memberships mapping users to roles within the org
+  memberships OrganizationMembership[]
+
+  // Optionally track who created the organization
+  createdBy String?
+  createdByUser User? @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+}
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+  INVITED
+}
+
+model OrganizationMembership {
+  id             String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           OrganizationRole @default(MEMBER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
 }
 
 model FeatureFlag {

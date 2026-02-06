@@ -302,6 +302,14 @@ router.post("/login", (req, res, next) => {
         expiresIn: "7d",
       });
 
+      // Set httpOnly cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
       res.json({
         user: {
           id: user.id,
@@ -309,20 +317,34 @@ router.post("/login", (req, res, next) => {
           name: user.name,
           emailVerified: user.emailVerified,
         },
-        token,
       });
     },
   )(req, res, next);
 });
 
-// Get current user
-router.get(
-  "/me",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.json({ user: req.user });
-  },
-);
+// Get current user (reads token from cookie)
+router.get("/me", async (req, res) => {
+  try {
+    const token = req.cookies?.token;
+    if (!token) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { id: true, email: true, name: true, emailVerified: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+});
 
 // ============ GOOGLE OAUTH ============
 
@@ -350,8 +372,16 @@ router.get(
       expiresIn: "7d",
     });
 
-    // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}/oauth/callback?token=${token}`);
+    // Set httpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Redirect to frontend dashboard
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 );
 
@@ -381,13 +411,26 @@ router.get(
       expiresIn: "7d",
     });
 
-    // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}/oauth/callback?token=${token}`);
+    // Set httpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Redirect to frontend dashboard
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 );
 
-// Logout
+// Logout - clear the httpOnly cookie
 router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
   res.json({ message: "Logged out successfully" });
 });
 

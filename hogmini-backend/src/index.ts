@@ -3,7 +3,9 @@ import { prisma } from "../lib/prisma.js";
 import crypto from "crypto";
 import cors from "cors";
 import passport from "passport";
+import cookieParser from "cookie-parser";
 import authRoutes from './routes/auth.route.js';
+import orgRoutes from './routes/organizations.route.js';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,11 +16,13 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/organizations', orgRoutes);
 
 
 
