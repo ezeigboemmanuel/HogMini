@@ -93,6 +93,38 @@ router.post("/", async (req, res) => {
   }
 });
 
+// List organizations for the current user (via cookie JWT)
+router.get("/", async (req, res) => {
+  try {
+    let userId: string | null = null;
+    try {
+      const token = req.cookies?.token;
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+        userId = decoded?.userId || null;
+      }
+    } catch (e) {
+      // ignore - unauthenticated
+    }
+
+    if (!userId) {
+      // No authenticated user - return empty list
+      return res.json([]);
+    }
+
+    const memberships = await prisma.organizationMembership.findMany({
+      where: { userId },
+      include: { organization: { select: { id: true, name: true, slug: true } } },
+    });
+
+    const orgs = memberships.map((m) => m.organization).filter(Boolean);
+    res.json(orgs);
+  } catch (err) {
+    console.error("List organizations error:", err);
+    res.status(500).json({ error: "Failed to list organizations" });
+  }
+});
+
 // Get organization details by slug
 router.get("/:slug", async (req, res) => {
   let { slug } = req.params;

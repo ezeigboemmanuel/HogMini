@@ -316,6 +316,7 @@ router.post("/login", (req, res, next) => {
           email: user.email,
           name: user.name,
           emailVerified: user.emailVerified,
+          image: user.image || null,
         },
       });
     },
@@ -333,7 +334,20 @@ router.get("/me", async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, name: true, emailVerified: true },
+      select: {
+        id: true,
+        image: true,
+        email: true,
+        name: true,
+        emailVerified: true,
+        organizationMemberships: {
+          select: {
+            organization: {
+              select: { id: true, slug: true, name: true },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -364,7 +378,7 @@ router.get(
     session: false,
     failureRedirect: `${process.env.FRONTEND_URL}/login?error=google_auth_failed`,
   }),
-  (req, res) => {
+  async (req, res) => {
     const user = req.user as any;
 
     // Generate JWT token
@@ -380,8 +394,21 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Redirect to frontend dashboard
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    // Decide redirect based on whether user belongs to an organization
+    try {
+      const membership = await prisma.organizationMembership.findFirst({
+        where: { userId: user.id },
+        include: { organization: true },
+      });
+      if (membership && membership.organization && membership.organization.slug) {
+        res.redirect(`${process.env.FRONTEND_URL}/org/${membership.organization.slug}/projects`);
+      } else {
+        res.redirect(`${process.env.FRONTEND_URL}/create`);
+      }
+    } catch (e) {
+      console.error('Redirect decision failed:', e);
+      res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    }
   }
 );
 
@@ -403,7 +430,7 @@ router.get(
     session: false,
     failureRedirect: `${process.env.FRONTEND_URL}/login?error=github_auth_failed`,
   }),
-  (req, res) => {
+  async (req, res) => {
     const user = req.user as any;
 
     // Generate JWT token
@@ -419,8 +446,21 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Redirect to frontend dashboard
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    // Decide redirect based on whether user belongs to an organization
+    try {
+      const membership = await prisma.organizationMembership.findFirst({
+        where: { userId: user.id },
+        include: { organization: true },
+      });
+      if (membership && membership.organization && membership.organization.slug) {
+        res.redirect(`${process.env.FRONTEND_URL}/org/${membership.organization.slug}/projects`);
+      } else {
+        res.redirect(`${process.env.FRONTEND_URL}/create`);
+      }
+    } catch (e) {
+      console.error('Redirect decision failed:', e);
+      res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    }
   }
 );
 
