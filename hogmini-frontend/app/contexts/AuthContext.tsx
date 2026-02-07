@@ -2,19 +2,14 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-}
-
+// Use the global `User` type declared in typings.d.ts
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,7 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const fetchUser = async (): Promise<User | null> => {
     try {
       const res = await fetch("http://localhost:3001/api/auth/me", {
         credentials: "include",
@@ -32,12 +27,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+        return data.user;
       } else {
         setUser(null);
+        return null;
       }
     } catch (error) {
       console.error("Failed to fetch user", error);
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -90,11 +88,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshUser = async () => {
-    await fetchUser();
+    return await fetchUser();
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

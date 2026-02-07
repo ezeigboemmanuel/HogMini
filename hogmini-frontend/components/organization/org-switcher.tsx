@@ -1,0 +1,173 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import * as React from "react";
+import { Building, Check, ChevronsUpDown, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { OrgCreateDialog } from "./org-create-dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+type Organization = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+export function OrgSwitcher({
+  currentOrgSlug,
+  currentOrgName,
+}: {
+  currentOrgSlug: string;
+  currentOrgName: string;
+}) {
+  const router = useRouter();
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const { isMobile } = useSidebar();
+
+  React.useEffect(() => {
+    async function fetchOrganizations() {
+      try {
+        const res = await fetch("http://localhost:3001/organizations", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const orgs = await res.json();
+          // Always include current org as a fallback and dedupe
+          const combined =
+            orgs && orgs.length > 0
+              ? orgs
+              : [
+                  {
+                    id: currentOrgSlug,
+                    name: currentOrgName,
+                    slug: currentOrgSlug,
+                  },
+                ];
+          // Ensure current org present
+          const hasCurrent = combined.some(
+            (o: any) => o.slug === currentOrgSlug,
+          );
+          if (!hasCurrent)
+            combined.unshift({
+              id: currentOrgSlug,
+              name: currentOrgName,
+              slug: currentOrgSlug,
+            });
+          setOrganizations(combined);
+        } else {
+          // If fetch fails, at least show the current org
+          setOrganizations([
+            { id: currentOrgSlug, name: currentOrgName, slug: currentOrgSlug },
+          ]);
+        }
+      } catch (e) {
+        console.error("Failed to fetch organizations:", e);
+        // If fetch fails, at least show the current org
+        setOrganizations([
+          { id: currentOrgSlug, name: currentOrgName, slug: currentOrgSlug },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrganizations();
+  }, [currentOrgSlug, currentOrgName]);
+
+  const handleOrgSwitch = (slug: string) => {
+    router.push(`/org/${slug}/projects`);
+  };
+
+  const handleCreateOrg = () => {
+    setOpen(true);
+  };
+
+  const onCreated = (org: Organization) => {
+    // add to the top of list and navigate is handled by dialog
+    setOrganizations((prev) => [
+      org,
+      ...prev.filter((o) => o.slug !== org.slug),
+    ]);
+  };
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="default"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-black"
+            >
+              <div className="flex items-center leading-none">
+                <Building className="h-4 w-4 mr-1" />
+                <span className="font-semibold truncate h-full">
+                  {currentOrgName}
+                </span>
+              </div>
+              <ChevronsUpDown className="ml-auto" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
+            align="start"
+            side={isMobile ? "bottom" : "right"}
+          >
+            {loading ? (
+              <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+            ) : (
+              <>
+                {/* Ensure the current org is always shown */}
+                {(organizations.length > 0
+                  ? organizations
+                  : [
+                      {
+                        id: currentOrgSlug,
+                        name: currentOrgName,
+                        slug: currentOrgSlug,
+                      },
+                    ]
+                ).map((org) => (
+                  <DropdownMenuItem
+                    key={org.id}
+                    onSelect={() => handleOrgSwitch(org.slug)}
+                  >
+                    {org.name}
+                    {org.slug === currentOrgSlug && (
+                      <Check className="ml-auto size-4" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={handleCreateOrg}>
+                  <Plus className="mr-2 size-4" />
+                  Create Organization
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+      <OrgCreateDialog
+        open={open}
+        onOpenChange={setOpen}
+        onCreated={onCreated}
+      />
+    </SidebarMenu>
+  );
+}

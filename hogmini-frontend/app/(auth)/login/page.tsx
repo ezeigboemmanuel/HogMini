@@ -20,7 +20,7 @@ export default function LoginPage() {
   const [showResendVerification, setShowResendVerification] = useState(false);
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, refreshUser } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +28,13 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      router.push("/dashboard");
+      const updated = await refreshUser();
+      const memberships = updated?.organizationMemberships ?? [];
+      if (memberships.length > 0 && memberships[0].organization?.slug) {
+        router.push(`/org/${memberships[0].organization.slug}/projects`);
+      } else {
+        router.push(`/create`);
+      }
     } catch (err: any) {
       // preserve existing error handling
       const message = err?.message || "Login failed";

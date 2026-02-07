@@ -19,7 +19,10 @@ export default function ClientNavbarController({
     "/verify-email",
   ];
 
-  const hideNavbar = !!pathname && authPaths.some((p) => pathname.startsWith(p));
+  const hideNavbar = !!pathname && (
+    authPaths.some((p) => pathname.startsWith(p)) ||
+    pathname.startsWith("/org/")
+  );
   const minimalNavbar = !!pathname && pathname.startsWith("/waitlist");
 
   return (
