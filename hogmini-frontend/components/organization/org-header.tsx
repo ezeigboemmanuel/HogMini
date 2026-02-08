@@ -1,39 +1,29 @@
-"use client"
+"use client";
 
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
-import { usePathname } from "next/navigation"
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import { OrgSwitcher } from "./org-switcher";
 
 export function OrgHeader({
   orgName,
   orgDescription,
   orgSlug,
 }: {
-  orgName: string
-  orgDescription?: string
-  orgSlug: string
+  orgName: string;
+  orgDescription?: string;
+  orgSlug: string;
 }) {
-  const { open } = useSidebar()
-  const pathname = usePathname()
-  
-  const isProjectsPage = pathname === `/org/${orgSlug}/projects`
+  const { open } = useSidebar();
+  const pathname = usePathname();
+
+  const isProjectsPage = pathname === `/org/${orgSlug}/projects`;
 
   return (
-    <header className="border-b bg-background px-6 py-3">
+    <header className="border-b bg-background px-6 py-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {!open && <SidebarTrigger />}
-          {isProjectsPage ? (
-            <h1 className="text-xl font-semibold">Projects</h1>
-          ) : (
-            <div>
-              <h1 className="text-xl font-semibold">{orgName}</h1>
-              {orgDescription && (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {orgDescription}
-                </p>
-              )}
-            </div>
-          )}
+          <OrgSwitcher currentOrgSlug={orgSlug} currentOrgName={orgName} />
         </div>
         {isProjectsPage && (
           <a
@@ -45,5 +35,5 @@ export function OrgHeader({
         )}
       </div>
     </header>
-  )
+  );
 }

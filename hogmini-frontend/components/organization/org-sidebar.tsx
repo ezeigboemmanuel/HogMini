@@ -108,13 +108,12 @@ export function OrgSidebar({
   return (
     <Sidebar className="bg-white!" collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <div className="flex items-center justify-between px-2 py-3">
+        <div className="flex items-center justify-between px-2 py-1">
           <Link href="/" className="flex items-center gap-2">
             <Image src={logoImg} alt="HogMini" width={24} height={24} />
           </Link>
           <SidebarTrigger />
         </div>
-        <OrgSwitcher currentOrgSlug={orgSlug} currentOrgName={orgName} />
       </SidebarHeader>
 
       <SidebarContent>

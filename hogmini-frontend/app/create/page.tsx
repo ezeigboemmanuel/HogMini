@@ -50,7 +50,6 @@ export default function CreatePage() {
       const data = await res.json();
       toast.success("Organization created");
       setOrgName("");
-      // Navigate to new org's projects page using slug (no id fallback)
       if (!data?.slug) {
         console.error("Create org response missing slug", data);
         toast.error("Organization created but server returned an unexpected response");

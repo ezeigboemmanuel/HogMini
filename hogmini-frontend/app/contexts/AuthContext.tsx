@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 
-// Use the global `User` type declared in typings.d.ts
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -76,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Registration doesn't set cookie, user must verify email then login
-    // Just return without setting user
   };
 
   const logout = async () => {

@@ -3,7 +3,6 @@ import React from "react";
 import ProjectsClient from "@/components/organization/projects-client";
 
 type Props = {
-  // `params` can be a Promise in newer Next.js internals; allow either.
   params: { orgSlug: string } | Promise<{ orgSlug: string }>;
 };
 
