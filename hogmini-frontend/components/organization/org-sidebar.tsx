@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/app/contexts/AuthContext"
 import logoImg from "@/components/icons/logo.png"
-import { OrgSwitcher } from "./org-switcher"
 
 function hashString(str?: string | null) {
   if (!str) return 0
@@ -69,11 +68,9 @@ function getInitials(name?: string | null, email?: string | null) {
 
 export function OrgSidebar({
   orgSlug,
-  orgName,
   ...props
 }: {
   orgSlug: string
-  orgName: string
 } & React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
@@ -119,6 +116,9 @@ export function OrgSidebar({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            <div className="pb-2 text-[10px] font-semibold text-muted-foreground">
+              ORGANIZATION
+            </div>
             <SidebarMenu>
               {navItems.map((item) => {
                 const Icon = (item as any).icon as React.ComponentType<any> | undefined
@@ -126,7 +126,7 @@ export function OrgSidebar({
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={pathname === item.url}>
                       <Link href={item.url} className="flex items-center gap-2">
-                        {Icon ? <Icon className="h-4 w-4" /> : null}
+                        {Icon ? <Icon className="h-4 w-4 stroke-gray-500" /> : null}
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

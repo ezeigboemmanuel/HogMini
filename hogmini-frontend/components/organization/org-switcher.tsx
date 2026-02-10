@@ -16,7 +16,6 @@ import {
 import {
   SidebarMenu,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 type Organization = {
@@ -36,7 +35,6 @@ export function OrgSwitcher({
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const { isMobile } = useSidebar();
 
   React.useEffect(() => {
     async function fetchOrganizations() {
@@ -130,10 +128,13 @@ export function OrgSwitcher({
           </div>
 
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-64"
             align="start"
-            side={isMobile ? "bottom" : "right"}
           >
+            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+              Organizations
+            </div>
+
             {loading ? (
               <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
             ) : (
@@ -153,7 +154,7 @@ export function OrgSwitcher({
                     key={org.id}
                     onSelect={() => handleOrgSwitch(org.slug)}
                   >
-                    {org.name}
+                    <span className="pl-2">{org.name}</span>
                     {org.slug === currentOrgSlug && (
                       <Check className="ml-auto size-4" />
                     )}
@@ -161,8 +162,8 @@ export function OrgSwitcher({
                 ))}
 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={handleCreateOrg}>
-                  <Plus className="mr-2 size-4" />
+                <DropdownMenuItem onSelect={handleCreateOrg} className="cursor-pointer">
+                  <Plus className=" size-4" />
                   Create Organization
                 </DropdownMenuItem>
               </>
