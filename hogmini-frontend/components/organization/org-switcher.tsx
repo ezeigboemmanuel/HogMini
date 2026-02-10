@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Building, Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { OrgCreateDialog } from "./org-create-dialog";
 
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -108,20 +107,28 @@ export function OrgSwitcher({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="default"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-black"
+          <div className="flex items-center w-full">
+            <button
+              type="button"
+              onClick={() => handleOrgSwitch(currentOrgSlug)}
+              className="w-full text-left truncate h-full px-1.5 py-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-150 text-sm cursor-pointer"
             >
-              <div className="flex items-center leading-none">
-                <Building className="h-4 w-4 mr-1" />
-                <span className="font-semibold truncate h-full">
-                  {currentOrgName}
-                </span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+              <span className="font-semibold">{currentOrgName}</span>
+            </button>
+
+            <div className="ml-0.5">
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Open organization switcher"
+                  className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-150 cursor-pointer"
+                >
+                  <ChevronsUpDown className="w-5 h-5 stroke-gray-500" />
+                </button>
+              </DropdownMenuTrigger>
+            </div>
+          </div>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
             align="start"
