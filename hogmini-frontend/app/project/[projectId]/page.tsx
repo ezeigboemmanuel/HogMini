@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import { withApi } from "@/lib/api";
 
 type Props = {
-  params: { projectId: string };
+  params: { projectId: string } | Promise<{ projectId: string }>;
 };
 
 export default async function ProjectPage({ params }: Props) {
-  const { projectId } = params;
+  const resolvedParams = await params;
+  const projectId = resolvedParams?.projectId ?? "";
 
   let project: any = null;
   try {
-    const res = await fetch(withApi(`/projects/${projectId}`), {
+    const res = await fetch(withApi(`/api/projects/${projectId}`), {
       cache: "no-store",
       credentials: "include",
     });
     if (res.ok) project = await res.json();
   } catch (e) {
-    // ignore - show fallback below
+    console.log("Failed to fetch project details for page", e);
   }
 
   if (!project) {

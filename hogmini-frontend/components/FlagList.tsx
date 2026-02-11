@@ -27,8 +27,8 @@ export default function FlagList({ projectId }: { projectId: string }) {
       try {
         // Run both requests at the same time (Faster)
         const [flagsRes, projectRes] = await Promise.all([
-          fetch(withApi(`/projects/${projectId}/flags`)),
-          fetch(withApi(`/projects/${projectId}`)),
+          fetch(withApi(`/api/projects/${projectId}/flags`)),
+          fetch(withApi(`/api/projects/${projectId}`)),
         ]);
 
         const flagsData = await flagsRes.json();
