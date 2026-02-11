@@ -9,6 +9,7 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GitHubIcon from "@/components/icons/GitHubIcon";
 import { toast } from "sonner";
+import { withApi } from "@/lib/api";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -37,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/auth/register", {
+      const response = await fetch(withApi("/api/auth/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name }),
@@ -163,7 +164,7 @@ export default function RegisterPage() {
               variant="outline"
               type="button"
               className="h-11 flex items-center justify-center"
-              onClick={() => window.location.href = 'http://localhost:3001/api/auth/google'}
+              onClick={() => (window.location.href = withApi("/api/auth/google"))}
             >
               <GoogleIcon className="w-5 h-5 mr-2" />
               Google
@@ -172,7 +173,7 @@ export default function RegisterPage() {
               variant="outline"
               type="button"
               className="h-11 flex items-center justify-center"
-              onClick={() => window.location.href = 'http://localhost:3001/api/auth/github'}
+              onClick={() => (window.location.href = withApi("/api/auth/github"))}
             >
               <GitHubIcon className="w-5 h-5 mr-2" />
               GitHub

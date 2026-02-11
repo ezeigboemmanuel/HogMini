@@ -1,4 +1,5 @@
 "use client";
+import { withApi } from "@/lib/api";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,7 +22,7 @@ export default function CreateFlagModal({ projectId, isOpen, onClose, onSuccess 
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3001/flags", {
+      const res = await fetch(withApi(`/flags`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

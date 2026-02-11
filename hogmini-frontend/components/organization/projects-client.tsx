@@ -1,9 +1,9 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import ProtectedRoute from "@/components/ProtectedRoute"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import CreateProjectDialog from "./create-project-dialog"
 
 export default function ProjectsClient({
   orgSlug,
@@ -17,7 +17,7 @@ export default function ProjectsClient({
       <div className="space-y-4">
         {projects.length === 0 ? (
           <div className="p-6">
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl">
               <h2 className="text-2xl font-semibold">Start your first project</h2>
               <p className="mt-3 text-sm text-muted-foreground">
                 Add a project and we&apos;ll provision development and production environments automatically.
@@ -26,9 +26,7 @@ export default function ProjectsClient({
                 Create feature flags, test them in each environment, and deploy with confidence.
               </p>
               <div className="mt-6">
-                <Link href={`/org/${orgSlug}/projects/new`} className="inline-block">
-                  <Button>Create project</Button>
-                </Link>
+                <CreateProjectInvoker orgSlug={orgSlug} />
               </div>
             </div>
           </div>
@@ -48,5 +46,16 @@ export default function ProjectsClient({
         )}
       </div>
     </ProtectedRoute>
+  )
+}
+
+function CreateProjectInvoker({ orgSlug }: { orgSlug: string }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="mt-6">
+      <Button onClick={() => setOpen(true)} className="cursor-pointer">Create project</Button>
+      <CreateProjectDialog open={open} onOpenChange={setOpen} orgSlug={orgSlug} />
+    </div>
   )
 }

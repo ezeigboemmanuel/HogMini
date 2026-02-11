@@ -17,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { withApi } from "@/lib/api";
 
 type Organization = {
   id: string;
@@ -39,7 +40,7 @@ export function OrgSwitcher({
   React.useEffect(() => {
     async function fetchOrganizations() {
       try {
-        const res = await fetch("http://localhost:3001/organizations", {
+          const res = await fetch(withApi(`/api/organizations`), {
           credentials: "include",
         });
         if (res.ok) {

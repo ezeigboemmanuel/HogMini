@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import CreateFlagModal from "./CreateFlagModal"; // <--- IMPORT THIS
 import Link from "next/link";
 import ConnectModal from "./ConnectModal";
+import { withApi } from "@/lib/api";
 
 interface FeatureFlag {
   id: string;
@@ -26,8 +27,8 @@ export default function FlagList({ projectId }: { projectId: string }) {
       try {
         // Run both requests at the same time (Faster)
         const [flagsRes, projectRes] = await Promise.all([
-          fetch(`http://localhost:3001/projects/${projectId}/flags`),
-          fetch(`http://localhost:3001/projects/${projectId}`),
+          fetch(withApi(`/projects/${projectId}/flags`)),
+          fetch(withApi(`/projects/${projectId}`)),
         ]);
 
         const flagsData = await flagsRes.json();
@@ -57,7 +58,7 @@ export default function FlagList({ projectId }: { projectId: string }) {
       flags.map((f) => (f.id === flag.id ? { ...f, isActive: newStatus } : f)),
     );
     // API Call
-    await fetch(`http://localhost:3001/flags/${flag.id}`, {
+    await fetch(withApi(`/flags/${flag.id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: newStatus }),

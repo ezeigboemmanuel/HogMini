@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { withApi } from "@/lib/api";
 
 function VerifyEmailContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
@@ -23,7 +24,7 @@ function VerifyEmailContent() {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/api/auth/verify-email?token=${token}`,
+          withApi(`/api/auth/verify-email?token=${token}`),
         );
 
         const data = await response.json();

@@ -22,7 +22,7 @@ app.use(passport.initialize());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/organizations', orgRoutes);
+app.use('/api/organizations', orgRoutes);
 
 
 
@@ -52,23 +52,6 @@ app.get("/sdk/rules", async (req, res) => {
   res.json({ flags });
 });
 
-// Create a new Project (e.g., "Google", "Facebook")
-app.post("/projects", async (req, res) => {
-  const { name } = req.body;
-
-  const randomBytes = crypto.randomBytes(32).toString("hex");
-
-  const newApiKey = `hog_live_${randomBytes}`;
-
-  const project = await prisma.project.create({
-    data: {
-      name,
-      apiKey: newApiKey,
-    },
-  });
-
-  res.json(project);
-});
 
 app.post("/flags", async (req, res) => {
   // 'rules' is optional. If missing, it defaults to undefined.

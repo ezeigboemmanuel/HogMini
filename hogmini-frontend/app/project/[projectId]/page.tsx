@@ -10,7 +10,7 @@ export default async function ProjectPage({ params }: Props) {
 
   let project: any = null;
   try {
-    const res = await fetch(`http://localhost:3001/projects/${projectId}`, {
+    const res = await fetch(withApi(`/projects/${projectId}`), {
       cache: "no-store",
       credentials: "include",
     });

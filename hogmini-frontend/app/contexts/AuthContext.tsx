@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { withApi } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -19,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async (): Promise<User | null> => {
     try {
-      const res = await fetch("http://localhost:3001/api/auth/me", {
+      const res = await fetch(withApi("/api/auth/me"), {
         credentials: "include",
       });
 
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3001/api/auth/login", {
+    const res = await fetch(withApi("/api/auth/login"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (email: string, password: string, name?: string) => {
-    const res = await fetch("http://localhost:3001/api/auth/register", {
+    const res = await fetch(withApi("/api/auth/register"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -78,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch("http://localhost:3001/api/auth/logout", {
+    await fetch(withApi("/api/auth/logout"), {
       method: "POST",
       credentials: "include",
     });

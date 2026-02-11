@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { API_URL } from "@/lib/api";
 
 interface ConnectModalProps {
   isOpen: boolean;
@@ -16,10 +17,10 @@ export default function ConnectModal({ isOpen, onClose, apiKey, projectId }: Con
   const codeSnippet = `import { HogMini } from "hogmini-node";
 
 // 1. Initialize with your API Key
-const hog = new HogMini(
-  "http://localhost:3001", // Change to your deployed URL later
-  "${apiKey}"
-);
+  const hog = new HogMini(
+    "${API_URL}", 
+    "${apiKey}"
+  );
 
 await hog.init();
 

@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { withApi } from "@/lib/api";
 
 export function OrgCreateDialog({
   open,
@@ -34,7 +35,7 @@ export function OrgCreateDialog({
     if (!name) return setError("Organization name is required");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/organizations", {
+      const res = await fetch(withApi(`/api/organizations`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),

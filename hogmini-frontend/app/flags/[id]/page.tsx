@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { withApi } from "@/lib/api";
 
 export default function FlagDetails() {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function FlagDetails() {
 
   // Fetch Flag Details
   useEffect(() => {
-    fetch(`http://localhost:3001/flags/details/${id}`)
+    fetch(withApi(`/flags/details/${id}`))
       .then((res) => res.json())
       .then((data) => {
         setFlag(data);
@@ -36,7 +37,7 @@ export default function FlagDetails() {
       newRules.push({ type: "percentage", value: rollout });
     }
 
-    await fetch(`http://localhost:3001/flags/${id}`, {
+    await fetch(withApi(`/flags/${id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

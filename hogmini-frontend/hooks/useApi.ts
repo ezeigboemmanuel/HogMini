@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from "@/app/contexts/AuthContext";
+import { withApi } from "@/lib/api";
 
 export function useApi() {
   const { logout } = useAuth();
@@ -14,7 +15,7 @@ export function useApi() {
       ...options.headers,
     };
 
-    const response = await fetch(`http://localhost:3001${url}`, {
+    const response = await fetch(withApi(url), {
       ...options,
       headers,
     });

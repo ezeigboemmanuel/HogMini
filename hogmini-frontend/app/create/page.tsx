@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { withApi } from "@/lib/api";
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
@@ -35,7 +36,7 @@ export default function CreatePage() {
     setIsCreating(true);
 
     try {
-      const res = await fetch("http://localhost:3001/organizations", {
+      const res = await fetch(withApi("/api/organizations"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

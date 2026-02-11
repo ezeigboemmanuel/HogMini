@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
 import ProjectsClient from "@/components/organization/projects-client";
+import { withApi } from "@/lib/api";
 
 type Props = {
   params: { orgSlug: string } | Promise<{ orgSlug: string }>;
@@ -14,7 +13,7 @@ export default async function OrgProjectsPage({ params }: Props) {
 
   try {
     const res = await fetch(
-      `http://localhost:3001/organizations/${orgSlug}/projects`,
+      withApi(`/api/organizations/${orgSlug}/projects`),
       {
         cache: "no-store",
         credentials: "include",
@@ -22,7 +21,7 @@ export default async function OrgProjectsPage({ params }: Props) {
     );
     if (res.ok) projects = await res.json();
   } catch (e) {
-    // ignore
+    console.log("Failed to fetch projects for org", orgSlug, e);
   }
 
   return <ProjectsClient orgSlug={orgSlug} projects={projects} />

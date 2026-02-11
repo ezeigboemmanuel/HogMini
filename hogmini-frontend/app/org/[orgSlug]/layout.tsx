@@ -4,6 +4,7 @@ import React from "react"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { OrgSidebar } from "../../../components/organization/org-sidebar"
 import { OrgHeader } from "../../../components/organization/org-header"
+import { withApi } from "@/lib/api"
 
 type Props = {
   children: React.ReactNode
@@ -15,8 +16,8 @@ export default async function OrgLayout({ children, params }: Props) {
   const orgSlug = resolvedParams.orgSlug
 
   let org: any = null
-  try {
-    const res = await fetch(`http://localhost:3001/organizations/${orgSlug}`, {
+    try {
+      const res = await fetch(withApi(`/api/organizations/${orgSlug}`), {
       cache: "no-store",
       credentials: "include",
     })
@@ -27,12 +28,11 @@ export default async function OrgLayout({ children, params }: Props) {
 
   return (
     <SidebarProvider>
-      <OrgSidebar orgSlug={orgSlug} orgName={org?.name ?? orgSlug} />
+      <OrgSidebar orgSlug={orgSlug} />
       <SidebarInset>
         <div className="flex h-full w-full flex-col">
           <OrgHeader 
             orgName={org?.name ?? orgSlug}
-            orgDescription={org?.description}
             orgSlug={orgSlug}
           />
           <main className="flex-1 overflow-auto p-6">

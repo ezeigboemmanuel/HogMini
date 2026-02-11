@@ -11,16 +11,16 @@ export function OrgHeader({
   orgName: string;
   orgSlug: string;
 }) {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   return (
-    <header className="border-b bg-background px-6 py-1">
+    <header className="border-b bg-background px-6 py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {!open && <SidebarTrigger />}
+          {(!open || isMobile) && <SidebarTrigger />}
           <OrgSwitcher currentOrgSlug={orgSlug} currentOrgName={orgName} />
         </div>
-        
+
         <Link href={`/docs`}>
           Docs
         </Link>

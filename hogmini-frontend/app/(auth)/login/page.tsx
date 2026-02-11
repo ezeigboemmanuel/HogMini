@@ -11,6 +11,7 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GitHubIcon from "@/components/icons/GitHubIcon";
 import { toast } from "sonner";
+import { withApi } from "@/lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -51,14 +52,11 @@ export default function LoginPage() {
   const handleResendVerification = async () => {
     setResendLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/auth/resend-verification",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: resendEmail }),
-        },
-      );
+      const response = await fetch(withApi("/api/auth/resend-verification"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resendEmail }),
+      });
       const data = await response.json();
       if (response.ok) {
         toast.success("Verification email sent! Please check your inbox.");
@@ -154,7 +152,7 @@ export default function LoginPage() {
               variant="outline" 
               type="button" 
               className="h-11 flex items-center justify-center"
-              onClick={() => window.location.href = 'http://localhost:3001/api/auth/google'}
+              onClick={() => (window.location.href = withApi("/api/auth/google"))}
             >
               <GoogleIcon className="w-5 h-5 size-6" />
               Google
@@ -164,7 +162,7 @@ export default function LoginPage() {
               variant="outline" 
               type="button" 
               className="h-11 flex items-center justify-center"
-              onClick={() => window.location.href = 'http://localhost:3001/api/auth/github'}
+              onClick={() => (window.location.href = withApi("/api/auth/github"))}
             >
               <GitHubIcon  className="w-5 h-5 size-6" />
               GitHub

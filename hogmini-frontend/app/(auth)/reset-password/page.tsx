@@ -9,6 +9,7 @@ import GoogleIcon from "@/components/icons/GoogleIcon";
 import GitHubIcon from "@/components/icons/GitHubIcon";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { withApi } from "@/lib/api";
 
 function ResetPasswordContent() {
   const [password, setPassword] = useState("");
@@ -35,7 +36,7 @@ function ResetPasswordContent() {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/api/auth/verify-reset-token?token=${token}`,
+          withApi(`/api/auth/verify-reset-token?token=${token}`),
         );
 
         const data = await response.json();
@@ -76,14 +77,11 @@ function ResetPasswordContent() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/auth/reset-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, password }),
-        },
-      );
+      const response = await fetch(withApi("/api/auth/reset-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+      });
 
       const data = await response.json();
 

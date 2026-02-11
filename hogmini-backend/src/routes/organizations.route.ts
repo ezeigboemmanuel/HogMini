@@ -163,4 +163,44 @@ router.get("/:slug/projects", async (req, res) => {
   res.json(projects);
 });
 
+// Create a new project within an organization identified by slug
+router.post('/:slug/projects', async (req, res) => {
+  try {
+    let { slug } = req.params;
+    try {
+      slug = decodeURIComponent(slug || '').trim();
+    } catch (e) {
+      slug = (slug || '').trim();
+    }
+    slug = slug.replace(/[\.\/]+$/g, '');
+
+    const { name } = req.body;
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: 'Project name is required' });
+    }
+
+    const org = await prisma.organization.findUnique({ where: { slug } });
+    if (!org) {
+      console.warn('Create project failed — organization not found for slug:', slug);
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const randomBytes = crypto.randomBytes(32).toString('hex');
+    const newApiKey = `hog_live_${randomBytes}`;
+
+    const project = await prisma.project.create({
+      data: {
+        name,
+        apiKey: newApiKey,
+        organizationId: org.id,
+      },
+    });
+
+    res.status(201).json(project);
+  } catch (err) {
+    console.error('Create project error:', err);
+    res.status(500).json({ error: 'Could not create project' });
+  }
+});
+
 export default router;
