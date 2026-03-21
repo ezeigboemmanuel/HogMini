@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hogmini_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      # We will create the default database based on your .env
+      POSTGRES_DB: hogmini_api
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hogmini-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d hogmini_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: hogmini_redis
+    # Command enables append-only mode for persistence
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - hogmini-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: hogmini_rabbitmq
+    ports:
+      # 5672 is for the actual message brokering
+      - "5672:5672"
+      # 15672 is the management UI website
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - hogmini-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Define the custom network to connect them all
+networks:
+  hogmini-network:
+    driver: bridge
+
+# Define the named volumes for data persistence
+volumes:
+  postgres_data:
+  redis_data:

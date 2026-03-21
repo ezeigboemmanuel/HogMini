@@ -1,0 +1,20 @@
+{
+  "name": "hogmini",
+  "private": true,
+  "packageManager": "npm@11.9.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.8.20"
+  }
+}
