@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -31,6 +29,11 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
+.env*
+
+# local env overrides
+.env*.local
+
 node_modules
 dist/
 # vercel
@@ -48,7 +51,5 @@ generated
 
 dist
 .env
-.env
-.env*.local
 *.log
 .turbo
