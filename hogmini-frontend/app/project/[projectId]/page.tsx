@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { withApi } from "@/lib/api";
+import { FeatureFlagsTable } from "@/components/project/feature-flags-table";
 import { Plus } from "lucide-react";
 
 type Props = {
@@ -34,27 +35,21 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-5xl px-4 lg:px-8 py-6">
+      <div className="mx-auto w-full max-w-310 px-4 lg:px-8">
         <header className="mb-6">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-3xl font-semibold text-gray-900">Feature Flags</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Feature Flags</h1>
             <button
               type="button"
-              className="inline-flex items-center rounded-md bg-black px-4 py-2 text-sm cursor-pointer font-medium text-white hover:bg-black/90"
+              className="inline-flex items-center rounded-md bg-black px-4 py-2 text-sm cursor-pointer font-medium text-white shadow-sm hover:bg-black/90"
             >
               <Plus className="w-5 h-5 mr-1" />
               Create Flag
             </button>
           </div>
-          <p className="mt-2 text-sm text-gray-600">
-            Feature flags let you turn features on or off without redeploying, and this is where you manage them for this project.
-          </p>
         </header>
 
-        <section className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium">Overview</h2>
-          <p className="mt-3 text-sm text-gray-700">{project.description || "No description provided."}</p>
-        </section>
+        <FeatureFlagsTable />
       </div>
     </div>
   );

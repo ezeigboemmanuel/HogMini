@@ -37,7 +37,7 @@ export default async function ProjectLayout({ children, params }: Props) {
             orgSlug={project?.organization?.slug ?? project?.orgSlug ?? project?.organizationSlug ?? null}
             orgName={project?.organization?.name ?? project?.orgName ?? null}
           />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-6">{children}</main>
         </div>
       </SidebarInset>
     </SidebarProvider>
