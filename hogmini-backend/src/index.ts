@@ -55,61 +55,11 @@ app.get("/sdk/rules", async (req, res) => {
 });
 
 
-app.post("/flags", async (req, res) => {
-  // 'rules' is optional. If missing, it defaults to undefined.
-  const { key, description, isActive, rules, projectId } = req.body;
-
-  if (!key || !projectId) {
-    return res.status(400).json({ error: "Missing key or projectId" });
-  }
-
-  try {
-    const flag = await prisma.featureFlag.create({
-      data: {
-        key,
-        description,
-        isActive: isActive ?? false,
-        rules: rules ?? [],
-        projectId,
-      },
-    });
-
-    res.status(201).json(flag);
-  } catch (err: any) {
-    // specific error code for unique constraint violation (duplicate key)
-    if (err.code === "P2002") {
-      return res
-        .status(409)
-        .json({ error: "Flag already exists in this project" });
-    }
-    console.error(err);
-    res.status(500).json({ error: "Could not create flag" });
-  }
-});
-
-
 // Toggle/Update Flag
-app.patch("/flags/:id", async (req, res) => {
-  const { id } = req.params;
-  const { isActive, rules } = req.body;
-
-  try {
-    const flag = await prisma.featureFlag.update({
-      where: { id },
-      data: {
-        // Only update what is provided
-        ...(isActive !== undefined && { isActive }),
-        ...(rules !== undefined && { rules }),
-      },
-    });
-    res.json(flag);
-  } catch (e) {
-    res.status(500).json({ error: "Update failed" });
-  }
-});
+// Moved to projects.route.ts
 
 // Get Single Flag Details
-app.get("/flags/details/:id", async (req, res) => {
+app.get("/api/flags/details/:id", async (req, res) => {
   const { id } = req.params;
   const flag = await prisma.featureFlag.findUnique({
     where: { id },

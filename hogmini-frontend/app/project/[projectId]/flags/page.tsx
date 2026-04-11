@@ -1,25 +1,53 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as React from "react";
+import { use } from "react";
 import { withApi } from "@/lib/api";
 import { FeatureFlagsTable } from "@/components/project/feature-flags-table";
 import { AlertTriangle, Plus } from "lucide-react";
+import CreateFlagDialog from "@/components/project/create-flag-dialog";
 
 type Props = {
-  params: { projectId: string } | Promise<{ projectId: string }>;
+  params: Promise<{ projectId: string }>;
 };
 
-export default async function ProjectFlagsPage({ params }: Props) {
-  const resolvedParams = await params;
-  const projectId = resolvedParams?.projectId ?? "";
+export default function ProjectFlagsPage({ params }: Props) {
+  const resolvedParams = use(params);
+  const projectId = resolvedParams.projectId;
 
-  let project: any = null;
-  try {
-    const res = await fetch(withApi(`/api/projects/${projectId}`), {
-      cache: "no-store",
-      credentials: "include",
-    });
-    if (res.ok) project = await res.json();
-  } catch (e) {
-    console.log("Failed to fetch project details for page", e);
+  const [project, setProject] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
+  
+  // Storage for the refresh function of the table
+  const [refreshTableFn, setRefreshTableFn] = React.useState<(() => void) | null>(null);
+
+  const fetchProject = React.useCallback(async () => {
+    try {
+      const res = await fetch(withApi(`/api/projects/${projectId}`), {
+        cache: "no-store",
+      });
+      if (res.ok) setProject(await res.json());
+    } catch (e) {
+      console.log("Failed to fetch project details for page", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
+
+  React.useEffect(() => {
+    fetchProject();
+  }, [fetchProject]);
+
+  const handleCreateSuccess = () => {
+    if (refreshTableFn) {
+      refreshTableFn();
+    }
+  };
+
+  if (loading) {
+    return null;
   }
 
   if (!project) {
@@ -61,6 +89,7 @@ export default async function ProjectFlagsPage({ params }: Props) {
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">Feature Flags</h1>
             <button
               type="button"
+              onClick={() => setIsCreateDialogOpen(true)}
               className="inline-flex items-center rounded-md bg-black px-4 py-2 text-sm cursor-pointer font-medium text-white shadow-sm hover:bg-black/90"
             >
               <Plus className="w-5 h-5 mr-1" />
@@ -69,8 +98,15 @@ export default async function ProjectFlagsPage({ params }: Props) {
           </div>
         </header>
 
-        <FeatureFlagsTable />
+        <FeatureFlagsTable projectId={projectId} refTable={setRefreshTableFn} />
+
+        <CreateFlagDialog 
+          open={isCreateDialogOpen} 
+          onOpenChange={setIsCreateDialogOpen} 
+          projectId={projectId}
+          onSuccess={handleCreateSuccess}
+        />
       </div>
     </div>
   );
-}
+}
