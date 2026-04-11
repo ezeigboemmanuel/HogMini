@@ -402,7 +402,7 @@ export function FeatureFlagsTable({
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full min-w-0 justify-between">
+                <Button variant="outline" className="w-full min-w-40! justify-between">
                   <span className="inline-flex items-center gap-2">
                     <ArrowUpDown className="size-4" />
                     {sortBy === "last_modified_desc" && "Last modified"}

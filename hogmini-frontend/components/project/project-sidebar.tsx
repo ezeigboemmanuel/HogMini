@@ -4,7 +4,20 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { PanelsTopLeft, BarChart2, Settings, LogOut, User, ChevronDown } from "lucide-react";
+import {
+  List,
+  Ban,
+  TrendingUp,
+  Sparkles,
+  Terminal,
+  Rocket,
+  BarChart3,
+  Settings,
+  LogOut,
+  User,
+  ChevronDown,
+  TestTubeDiagonal
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -94,11 +107,36 @@ export default function ProjectSidebar({
   const selectedEnvironmentData =
     environments.find((env) => env.name === selectedEnvironment) ?? environments[0];
 
-  const navItems: NavItem[] = [
-    { title: "Feature Flags", url: `/project/${projectId}/flags`, icon: PanelsTopLeft },
-    { title: "Insights", url: `/project/${projectId}/insights`, icon: BarChart2 },
-    { title: "Project Settings", url: `/project/${projectId}/settings`, icon: Settings },
-  ]
+  const categories = [
+    {
+      label: "LAUNCH",
+      items: [
+        { title: "All Features", url: `/project/${projectId}/flags`, icon: List },
+        { title: "Kill Switches", url: `/project/${projectId}/kill-switches`, icon: Ban },
+        { title: "Phased Rollouts", url: `/project/${projectId}/rollouts`, icon: TrendingUp },
+        { title: "Beta Programs", url: `/project/${projectId}/beta`, icon: TestTubeDiagonal },
+      ],
+    },
+    {
+      label: "CONFIGURE",
+      items: [
+        { title: "Remote Config", url: `/project/${projectId}/remote-config`, icon: Terminal },
+        { title: "SDK & API Keys", url: `/project/${projectId}/sdk`, icon: Rocket },
+      ],
+    },
+    {
+      label: "MEASURE",
+      items: [
+        { title: "Insights & Stats", url: `/project/${projectId}/insights`, icon: BarChart3 },
+      ],
+    },
+    {
+      label: "SETTINGS",
+      items: [
+        { title: "Project Settings", url: `/project/${projectId}/settings`, icon: Settings },
+      ],
+    },
+  ];
 
   return (
     <Sidebar className="bg-white!" collapsible="offcanvas">
@@ -111,19 +149,19 @@ export default function ProjectSidebar({
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="pb-2 text-[10px] font-semibold text-muted-foreground">
-              PROJECT
+            <div className="pb-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2">
+              Current Environment
             </div>
-            <div className="mb-2">
+            <div className="mb-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="w-full justify-between border">
+                  <SidebarMenuButton className="w-full justify-between border bg-muted/30 hover:bg-muted/50 transition-colors">
                     <span className="inline-flex items-center gap-2">
-                      <span className={`size-2 rounded-full ${selectedEnvironmentData.dotClass}`} />
-                      <span>{selectedEnvironmentData.name}</span>
+                      <span className={`size-2 rounded-full ${selectedEnvironmentData.dotClass} animate-pulse`} />
+                      <span className="font-medium text-xs">{selectedEnvironmentData.name}</span>
                     </span>
                     <ChevronDown className="size-4 text-muted-foreground" />
                   </SidebarMenuButton>
@@ -141,21 +179,29 @@ export default function ProjectSidebar({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={pathname === item.url}>
-                      <Link href={item.url} className="flex items-center gap-2">
-                        {Icon ? <Icon className="h-4 w-4 stroke-gray-500" /> : null}
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
+
+            {categories.map((category) => (
+              <div key={category.label} className="mb-6">
+                <div className="px-2 pb-2 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                  {category.label}
+                </div>
+                <SidebarMenu>
+                  {category.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild isActive={pathname === item.url}>
+                          <Link href={item.url} className="flex items-center gap-2">
+                            {Icon ? <Icon className="h-4 w-4" /> : null}
+                            <span className="text-sm">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </div>
+            ))}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
