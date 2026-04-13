@@ -39,19 +39,38 @@ app.get("/sdk/rules", async (req, res) => {
     return res.status(401).json({ error: "Missing API Key" });
   }
 
-  const project = await prisma.project.findUnique({
+  // 1. Find the environment by API Key
+  const environment = await prisma.environment.findUnique({
     where: { apiKey: apiKey as string },
+    include: { project: true },
   });
 
-  if (!project) {
+  if (!environment) {
     return res.status(401).json({ error: "Invalid API Key" });
   }
 
+  // 2. Fetch all flags for the project including their state for THIS environment
   const flags = await prisma.featureFlag.findMany({
-    where: { projectId: project.id },
+    where: { projectId: environment.projectId },
+    include: {
+      states: {
+        where: { environmentId: environment.id },
+      },
+    },
   });
 
-  res.json({ flags });
+  // 3. Transform to match SDK expectation (isActive/rules at top level)
+  const transformedFlags = flags.map((f) => {
+    const state = f.states[0]; // Logic: Every flag has a state per env
+    return {
+      id: f.id,
+      key: f.key,
+      isActive: state?.isActive ?? false,
+      rules: state?.rules ?? [],
+    };
+  });
+
+  res.json({ flags: transformedFlags });
 });
 
 

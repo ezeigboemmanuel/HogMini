@@ -26,11 +26,16 @@ interface SdkClientProps {
   };
 }
 
+import { useProject } from "@/app/contexts/ProjectContext";
+
 export default function SdkClient({ project }: SdkClientProps) {
+  const { selectedEnvironment } = useProject();
   const [showKey, setShowKey] = React.useState(false);
   const [copiedKey, setCopiedKey] = React.useState(false);
   const [copiedId, setCopiedId] = React.useState(false);
   const [selectedSdk, setSelectedSdk] = React.useState("nextServer");
+
+  const effectiveApiKey = selectedEnvironment?.apiKey || project.apiKey;
 
   const copyToClipboard = (text: string, type: "key" | "id") => {
     navigator.clipboard.writeText(text);
@@ -53,14 +58,14 @@ export default function SdkClient({ project }: SdkClientProps) {
     fetch: {
       install: `# No installation required for basic fetch usage`,
       usage: `// Standard JavaScript Fetch
-const fetchFlag = async (flagKey) => {
-  const res = await fetch(\`http://localhost:3001/api/public/flags/\${flagKey}\`, {
+const fetchFlags = async () => {
+  const res = await fetch(\`http://localhost:3001/sdk/rules\`, {
     headers: {
-      'x-api-key': '${project.apiKey}'
+      'Authorization': '${effectiveApiKey}'
     }
   });
   const data = await res.json();
-  return data.isActive;
+  return data.flags; // Returns array of flags for this environment
 };`,
     },
     nextServer: {
@@ -72,7 +77,7 @@ const fetchFlag = async (flagKey) => {
       usage: `import { HogMini } from "hogmini-node";
 
 // 1. Initialize the SDK
-const hog = new HogMini("http://localhost:3001", "${project.apiKey}");
+const hog = new HogMini("http://localhost:3001", "${effectiveApiKey}");
 await hog.init();
 
 // 2. Evaluate a flag
@@ -88,21 +93,23 @@ if (isEnabled) {
         pnpm: `pnpm add hogmini-node`,
         yarn: `yarn add hogmini-node`,
       },
-      usage: `// Using basic fetch for client-side (standard for now)
+      usage: `// Using basic fetch for client-side
 import { useEffect, useState } from 'react';
 
 function MyComponent() {
-  const [active, setActive] = useState(false);
+  const [flags, setFlags] = useState([]);
 
   useEffect(() => {
-    fetch(\`http://localhost:3001/api/public/flags/my-flag\`, {
-      headers: { 'x-api-key': '${project.apiKey}' }
+    fetch(\`http://localhost:3001/sdk/rules\`, {
+      headers: { 'Authorization': '${effectiveApiKey}' }
     })
       .then(res => res.json())
-      .then(data => setActive(data.isActive));
+      .then(data => setFlags(data.flags));
   }, []);
 
-  return active ? <NewFeature /> : <OldFeature />;
+  const isEnabled = flags.find(f => f.key === 'my-flag')?.isActive;
+
+  return isEnabled ? <NewFeature /> : <OldFeature />;
 }`,
     },
   };
@@ -126,7 +133,7 @@ function MyComponent() {
                   <Input
                     readOnly
                     type={showKey ? "text" : "password"}
-                    value={project.apiKey}
+                    value={effectiveApiKey || ""}
                     className="pr-24 font-mono text-xs tracking-tight bg-muted/20"
                   />
                   <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-0.5">
@@ -142,7 +149,7 @@ function MyComponent() {
                       variant="ghost"
                       size="icon"
                       className="size-8 hover:bg-background"
-                      onClick={() => copyToClipboard(project.apiKey, "key")}
+                      onClick={() => copyToClipboard(effectiveApiKey, "key")}
                     >
                       {copiedKey ? <Check className="size-3.5 text-green-500" /> : <Copy className="size-3.5" />}
                     </Button>
@@ -162,7 +169,7 @@ function MyComponent() {
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={project.id}
+                  value={project.id || ""}
                   className="font-mono text-xs tracking-tight bg-muted/20"
                 />
                 <Button

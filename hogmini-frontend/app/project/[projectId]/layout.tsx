@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import ProjectSidebar from "../../../components/project/project-sidebar"
 import ProjectHeader from "../../../components/project/project-header"
 import { withApi } from "@/lib/api"
+import { ProjectProvider } from "@/app/contexts/ProjectContext"
 
 type Props = {
   children: React.ReactNode
@@ -27,19 +28,21 @@ export default async function ProjectLayout({ children, params }: Props) {
   }
 
   return (
-    <SidebarProvider>
-      <ProjectSidebar projectId={projectId} />
-      <SidebarInset>
-        <div className="flex h-full w-full flex-col">
-          <ProjectHeader
-            projectName={project?.name}
-            projectId={projectId}
-            orgSlug={project?.organization?.slug ?? project?.orgSlug ?? project?.organizationSlug ?? null}
-            orgName={project?.organization?.name ?? project?.orgName ?? null}
-          />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-6">{children}</main>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <ProjectProvider initialProject={project}>
+      <SidebarProvider>
+        <ProjectSidebar projectId={projectId} />
+        <SidebarInset>
+          <div className="flex h-full w-full flex-col">
+            <ProjectHeader
+              projectName={project?.name}
+              projectId={projectId}
+              orgSlug={project?.organization?.slug ?? project?.orgSlug ?? project?.organizationSlug ?? null}
+              orgName={project?.organization?.name ?? project?.orgName ?? null}
+            />
+            <main className="flex-1 overflow-y-auto overflow-x-hidden p-6">{children}</main>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProjectProvider>
   )
 }

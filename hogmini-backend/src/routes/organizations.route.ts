@@ -185,16 +185,29 @@ router.post('/:slug/projects', async (req, res) => {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
-    const randomBytes = crypto.randomBytes(32).toString('hex');
-    const newApiKey = `hog_live_${randomBytes}`;
-
     const project = await prisma.project.create({
       data: {
         name,
-        apiKey: newApiKey,
         organizationId: org.id,
       },
     });
+
+    // Create 3 environments automatically
+    const environments = [
+      { name: "Development", prefix: "hog_dev_" },
+      { name: "Staging", prefix: "hog_staging_" },
+      { name: "Production", prefix: "hog_prod_" },
+    ];
+
+    for (const env of environments) {
+      await prisma.environment.create({
+        data: {
+          name: env.name,
+          apiKey: `${env.prefix}${crypto.randomBytes(32).toString("hex")}`,
+          projectId: project.id,
+        },
+      });
+    }
 
     res.status(201).json(project);
   } catch (err) {

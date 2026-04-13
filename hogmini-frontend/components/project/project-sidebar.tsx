@@ -86,6 +86,8 @@ type NavItem = {
   icon?: IconType
 }
 
+import { useProject } from "@/app/contexts/ProjectContext";
+
 export default function ProjectSidebar({
   projectId,
 }: {
@@ -93,19 +95,23 @@ export default function ProjectSidebar({
 }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const [selectedEnvironment, setSelectedEnvironment] = React.useState("Development");
+  const { selectedEnvironment, environments, setSelectedEnvironmentById } = useProject();
+
   const idForColor = React.useMemo(
     () => user?.id || user?.email || "anonymous",
     [user?.id, user?.email],
   );
 
-  const environments = [
-    { name: "Development", dotClass: "bg-blue-500" },
-    { name: "Staging", dotClass: "bg-amber-500" },
-    { name: "Production", dotClass: "bg-emerald-500" },
-  ] as const;
-  const selectedEnvironmentData =
-    environments.find((env) => env.name === selectedEnvironment) ?? environments[0];
+  const getDotClass = (name: string) => {
+    switch (name.toLowerCase()) {
+      case "production": return "bg-emerald-500";
+      case "staging": return "bg-amber-500";
+      case "development": return "bg-blue-500";
+      default: return "bg-gray-400";
+    }
+  };
+
+  const selectedEnvironmentData = selectedEnvironment || environments[0];
 
   const categories = [
     {
@@ -160,8 +166,8 @@ export default function ProjectSidebar({
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton className="w-full justify-between border bg-muted/30 hover:bg-muted/50 transition-colors">
                     <span className="inline-flex items-center gap-2">
-                      <span className={`size-2 rounded-full ${selectedEnvironmentData.dotClass} animate-pulse`} />
-                      <span className="font-medium text-xs">{selectedEnvironmentData.name}</span>
+                      <span className={`size-2 rounded-full ${getDotClass(selectedEnvironmentData?.name || "")} animate-pulse`} />
+                      <span className="font-medium text-xs">{selectedEnvironmentData?.name}</span>
                     </span>
                     <ChevronDown className="size-4 text-muted-foreground" />
                   </SidebarMenuButton>
@@ -171,8 +177,12 @@ export default function ProjectSidebar({
                   className="w-(--radix-dropdown-menu-trigger-width)"
                 >
                   {environments.map((env) => (
-                    <DropdownMenuItem key={env.name} onSelect={() => setSelectedEnvironment(env.name)}>
-                      <span className={`mr-2 size-2 rounded-full ${env.dotClass}`} />
+                    <DropdownMenuItem 
+                      key={env.id} 
+                      onSelect={() => setSelectedEnvironmentById(env.id)}
+                      className="cursor-pointer"
+                    >
+                      <span className={`mr-2 size-2 rounded-full ${getDotClass(env.name)}`} />
                       <span>{env.name}</span>
                     </DropdownMenuItem>
                   ))}

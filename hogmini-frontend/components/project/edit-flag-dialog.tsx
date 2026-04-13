@@ -37,6 +37,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
+import { useProject } from "@/app/contexts/ProjectContext";
+
 const formSchema = z.object({
   key: z.string().min(1, "Key is required").regex(/^[a-zA-Z0-9_-]+$/, "Only alphanumeric, underscores and dashes allowed"),
   description: z.string().optional(),
@@ -65,6 +67,7 @@ export default function EditFlagDialog({
   flag,
   onSuccess,
 }: EditFlagDialogProps) {
+  const { selectedEnvironment } = useProject();
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
@@ -94,7 +97,10 @@ export default function EditFlagDialog({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          environmentId: selectedEnvironment?.id
+        }),
       });
 
       if (response.ok) {

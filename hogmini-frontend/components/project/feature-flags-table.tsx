@@ -80,6 +80,8 @@ export type FeatureFlagRow = {
   };
 };
 
+import { useProject } from "@/app/contexts/ProjectContext";
+
 export function FeatureFlagsTable({
   projectId,
   refTable
@@ -87,6 +89,7 @@ export function FeatureFlagsTable({
   projectId: string;
   refTable?: (ref: (isInitial?: boolean) => void) => void;
 }) {
+  const { selectedEnvironment } = useProject();
   const [data, setData] = useState<FeatureFlagRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [globalSearch, setGlobalSearch] = useState("");
@@ -102,43 +105,51 @@ export function FeatureFlagsTable({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const fetchFlags = useCallback(async (isInitial = false) => {
-    if (isInitial) setIsLoading(true);
+    if (!selectedEnvironment?.id) return;
+    if (isInitial) {
+      console.time(`Frontend: Fetch Flags [${selectedEnvironment.name}]`);
+      setIsLoading(true);
+    }
     try {
-      const res = await fetch(withApi(`/api/projects/${projectId}/flags?t=${Date.now()}`), {
+      const res = await fetch(withApi(`/api/projects/${projectId}/flags?environmentId=${selectedEnvironment.id}&t=${Date.now()}`), {
         cache: "no-store",
         credentials: "include",
       });
       if (res.ok) {
         const json = await res.json();
         setData(json.flags || []);
+        if (isInitial) console.timeEnd(`Frontend: Fetch Flags [${selectedEnvironment.name}]`);
       }
     } catch (e) {
       console.error("Failed to fetch flags", e);
-      toast.error("Failed to load feature flags");
+      // toast.error("Failed to load feature flags");
     } finally {
       if (isInitial) setIsLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, selectedEnvironment?.id]);
 
   useEffect(() => {
     fetchFlags(true);
     if (refTable) {
-      // Wrap in a function to avoid React functional update pitfall in the parent
       refTable(() => fetchFlags);
     }
-  }, [fetchFlags, refTable]);
+  }, [fetchFlags, refTable, selectedEnvironment?.id]);
 
   const toggleFlag = async (flagId: string, currentStatus: boolean) => {
+    if (!selectedEnvironment?.id) return;
     const newStatus = !currentStatus;
     try {
       const res = await fetch(withApi(`/api/projects/${projectId}/flags/${flagId}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: newStatus }),
+        body: JSON.stringify({ 
+          isActive: newStatus,
+          environmentId: selectedEnvironment.id 
+        }),
         credentials: "include",
       });
       if (res.ok) {
-        toast.success(`Flag ${newStatus ? 'enabled' : 'disabled'}`);
+        toast.success(`Flag ${newStatus ? 'enabled' : 'disabled'} in ${selectedEnvironment.name}`);
         setData(prev => prev.map(f => f.id === flagId ? { ...f, isActive: newStatus } : f));
       } else {
         toast.error("Failed to update flag");
@@ -338,8 +349,6 @@ export function FeatureFlagsTable({
     if (value === "key_asc") setSorting([{ id: "key", desc: false }]);
   };
 
-  if (isLoading) return null;
-
   return (
     <>
       <section className="w-full min-w-0 overflow-hidden rounded-lg border border-border/70">
@@ -439,7 +448,15 @@ export function FeatureFlagsTable({
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows.length ? (
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i} className="animate-pulse">
+                    <TableCell colSpan={columns.length} className="px-4 py-8">
+                       <div className="h-4 bg-muted/60 rounded w-full" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (

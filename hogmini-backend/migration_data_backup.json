@@ -1,0 +1,42 @@
+{
+  "projects": [
+    {
+      "id": "09d23ec2-6139-490b-bb68-c4755bf7618d",
+      "name": "Z-commerce",
+      "apiKey": "hog_live_b069910a1cc12fd2cc932f813c07f2006778122fc2db20828f23fd12eb2e884f"
+    },
+    {
+      "id": "f435fe44-f65e-461a-87c5-18c60d5772f5",
+      "name": "Project X",
+      "apiKey": "hog_live_f6309d8d3a7c5c90b78834f7d11f5205558646b625b59ea28449f6de3022e93b"
+    },
+    {
+      "id": "e9635523-5b74-4389-ab85-05c0c2f50293",
+      "name": "Music Blog",
+      "apiKey": "hog_live_92b3a2cf2524fc827a42483a2e9e8478882282b348151e6be91c76d202d455ee"
+    }
+  ],
+  "flags": [
+    {
+      "id": "3434190a-4db0-4a69-a2d3-357ba40b9237",
+      "key": "show_banner",
+      "isActive": false,
+      "rules": [],
+      "projectId": "e9635523-5b74-4389-ab85-05c0c2f50293"
+    },
+    {
+      "id": "554f4142-7743-4060-9fe7-9c8035f298ef",
+      "key": "show_button",
+      "isActive": false,
+      "rules": [],
+      "projectId": "e9635523-5b74-4389-ab85-05c0c2f50293"
+    },
+    {
+      "id": "fb4010ad-6b1c-42df-aea3-4ff901fb403c",
+      "key": "beta_feature",
+      "isActive": true,
+      "rules": [],
+      "projectId": "09d23ec2-6139-490b-bb68-c4755bf7618d"
+    }
+  ]
+}

@@ -25,6 +25,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useProject } from "@/app/contexts/ProjectContext";
+
 export default function CreateFlagDialog({
   open,
   onOpenChange,
@@ -36,6 +38,7 @@ export default function CreateFlagDialog({
   projectId: string;
   onSuccess?: () => void;
 }) {
+  const { selectedEnvironment } = useProject();
   const [key, setKey] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [isActive, setIsActive] = React.useState(true);
@@ -61,7 +64,8 @@ export default function CreateFlagDialog({
           key: key.trim(),
           description: description.trim(),
           isActive,
-          rules: []
+          rules: [],
+          environmentId: selectedEnvironment?.id
         }),
       });
 
