@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { withApi } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export default function FlagDetails() {
   const { id } = useParams();
@@ -13,7 +13,7 @@ export default function FlagDetails() {
 
   // Fetch Flag Details
   useEffect(() => {
-    fetch(withApi(`/flags/details/${id}`))
+    apiFetch(`/api/flags/details/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setFlag(data);
@@ -37,9 +37,8 @@ export default function FlagDetails() {
       newRules.push({ type: "percentage", value: rollout });
     }
 
-    await fetch(withApi(`/flags/${id}`), {
+    await apiFetch(`/api/flags/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         rules: newRules,
         isActive: true, // Force ON if we are setting rules

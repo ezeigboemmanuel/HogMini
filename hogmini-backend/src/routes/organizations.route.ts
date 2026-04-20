@@ -1,9 +1,12 @@
 import express from "express";
-import { prisma } from "../../lib/prisma";
-import jwt from "jsonwebtoken";
+import { prisma } from "../../lib/prisma.js";
+import { isAuthenticated } from "../middleware/auth.js";
+import { Request } from "express";
 import crypto from "crypto";
 
 const router = express.Router();
+
+router.use(isAuthenticated);
 
 // Helper: generate a URL-friendly slug from a name
 const makeSlug = (name: string) =>
@@ -34,17 +37,8 @@ router.post("/", async (req, res) => {
       tries++;
     }
 
-    // Try to read authenticated user from cookie token
-    let createdBy: string | null = null;
-    try {
-      const token = req.cookies?.token;
-      if (token) {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-        createdBy = decoded?.userId || null;
-      }
-    } catch (e) {
-      // ignore - organization can be created without auth (fallback)
-    }
+    // Try to read authenticated user from middleware
+    const createdBy = (req.user as any)?.id || null;
 
     // Attempt creation and retry on unique-constraint (P2002) for slug collisions.
     let org: any = null;
@@ -96,20 +90,11 @@ router.post("/", async (req, res) => {
 // List organizations for the current user (via cookie JWT)
 router.get("/", async (req, res) => {
   try {
-    let userId: string | null = null;
-    try {
-      const token = req.cookies?.token;
-      if (token) {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-        userId = decoded?.userId || null;
-      }
-    } catch (e) {
-      // ignore - unauthenticated
-    }
+    const userId = (req.user as any)?.id;
 
     if (!userId) {
-      // No authenticated user - return empty list
-      return res.json([]);
+      // Should not happen with isAuthenticated middleware
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     const memberships = await prisma.organizationMembership.findMany({

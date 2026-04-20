@@ -1,20 +1,11 @@
 import express from "express";
 import { prisma } from "../../lib/prisma.js";
-import jwt from "jsonwebtoken";
+import { isAuthenticated } from "../middleware/auth.js";
+import { Request } from "express";
 
 const router = express.Router();
 
-// Helper to get user ID from cookie
-const getUserId = (req: any) => {
-  try {
-    const token = req.cookies?.token;
-    if (!token) return null;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    return decoded.userId;
-  } catch {
-    return null;
-  }
-};
+router.use(isAuthenticated);
 
 // Get Flags for Dashboard (Environment-Aware)
 router.get("/:projectId/flags", async (req, res) => {
@@ -63,7 +54,7 @@ router.post("/:projectId/flags", async (req, res) => {
 
   if (!key) return res.status(400).json({ error: "Missing flag key" });
 
-  const userId = getUserId(req);
+  const userId = (req.user as any)?.id;
 
   try {
     // 1. Get all environments for the project

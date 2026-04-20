@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 export interface Environment {
   id: string;
@@ -56,13 +57,17 @@ export function ProjectProvider({
   const fetchProject = async () => {
     if (!projectId) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/projects/${projectId}`, {
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      setProject(data);
+      const res = await apiFetch(`/api/projects/${projectId}`);
+      
+      if (res.ok) {
+        const data = await res.json();
+        setProject(data);
+      } else {
+        setProject(null);
+      }
     } catch (err) {
       console.error("Failed to fetch project:", err);
+      setProject(null);
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +79,7 @@ export function ProjectProvider({
 
   // Handle environment selection logic (Initial and URL sync)
   useEffect(() => {
-    if (!project || !project.environments.length) return;
+    if (!project || !project.environments || !project.environments.length) return;
 
     if (envParam) {
       const matching = project.environments.find(

@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from './routes/auth.route.js';
 import orgRoutes from './routes/organizations.route.js';
 import projectsRoutes from './routes/projects.route.js';
+import { isAuthenticated } from "./middleware/auth.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -78,10 +79,10 @@ app.get("/sdk/rules", async (req, res) => {
 // Moved to projects.route.ts
 
 // Get Single Flag Details
-app.get("/api/flags/details/:id", async (req, res) => {
+app.get("/api/flags/details/:id", isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const flag = await prisma.featureFlag.findUnique({
-    where: { id },
+    where: { id: id as string },
   });
 
   if (!flag) return res.status(404).json({ error: "Not found" });

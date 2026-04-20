@@ -7,8 +7,8 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient } from '../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-const adapter = new PrismaPg({ 
-  connectionString: process.env.DATABASE_URL 
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -28,7 +28,7 @@ passport.use(
         }
 
         const isValid = await bcrypt.compare(password, user.password);
-        
+
         if (!isValid) {
           return done(null, false, { message: 'Invalid credentials' });
         }
@@ -70,7 +70,7 @@ passport.use(
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   const googleCallbackURL = `${process.env.BACKEND_URL}/api/auth/google/callback`;
   console.log('Google OAuth callback URL:', googleCallbackURL);
-  
+
   passport.use(
     new GoogleStrategy(
       {

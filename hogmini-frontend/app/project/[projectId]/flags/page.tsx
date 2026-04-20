@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { use } from "react";
-import { withApi } from "@/lib/api";
+import { withApi, apiFetch } from "@/lib/api";
 import { FeatureFlagsTable } from "@/components/project/feature-flags-table";
 import { AlertTriangle, Plus } from "lucide-react";
 import CreateFlagDialog from "@/components/project/create-flag-dialog";
@@ -25,7 +25,7 @@ export default function ProjectFlagsPage({ params }: Props) {
 
   const fetchProject = React.useCallback(async () => {
     try {
-      const res = await fetch(withApi(`/api/projects/${projectId}`), {
+      const res = await apiFetch(`/api/projects/${projectId}`, {
         cache: "no-store",
       });
       if (res.ok) setProject(await res.json());

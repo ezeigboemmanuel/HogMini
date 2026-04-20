@@ -6,6 +6,7 @@ import ProjectSidebar from "../../../components/project/project-sidebar"
 import ProjectHeader from "../../../components/project/project-header"
 import { withApi } from "@/lib/api"
 import { ProjectProvider } from "@/app/contexts/ProjectContext"
+import { cookies } from "next/headers"
 
 type Props = {
   children: React.ReactNode
@@ -18,9 +19,14 @@ export default async function ProjectLayout({ children, params }: Props) {
 
   let project: any = null
   try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
     const res = await fetch(withApi(`/api/projects/${projectId}`), {
       cache: "no-store",
-      credentials: "include",
+      headers: {
+        Cookie: `token=${token}`,
+      },
     })
     if (res.ok) project = await res.json()
   } catch (e) {

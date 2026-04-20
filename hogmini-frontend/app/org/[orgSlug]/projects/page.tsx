@@ -1,5 +1,6 @@
 import ProjectsClient from "@/components/organization/projects-client";
 import { withApi } from "@/lib/api";
+import { cookies } from "next/headers";
 
 type Props = {
   params: { orgSlug: string } | Promise<{ orgSlug: string }>;
@@ -12,11 +13,16 @@ export default async function OrgProjectsPage({ params }: Props) {
   let projects: Project[] = [];
 
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
     const res = await fetch(
       withApi(`/api/organizations/${orgSlug}/projects`),
       {
         cache: "no-store",
-        credentials: "include",
+        headers: {
+          Cookie: `token=${token}`,
+        },
       },
     );
     if (res.ok) projects = await res.json();
