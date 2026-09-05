@@ -71,6 +71,13 @@ app.get("/sdk/rules", async (req, res) => {
     };
   });
 
+  const etag = crypto.createHash("md5").update(JSON.stringify(transformedFlags)).digest("hex");
+
+  if (req.headers["if-none-match"] === etag) {
+    return res.status(304).end();
+  }
+
+  res.setHeader("ETag", etag);
   res.json({ flags: transformedFlags });
 });
 

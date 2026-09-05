@@ -1,19 +1,32 @@
 {
   "name": "hogmini-node",
   "version": "1.0.0",
-  "description": "",
+  "description": "Official Node.js SDK for HogMini feature flags. High-performance, with background polling, jitter, and ETags.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "feature-flags",
+    "rollouts",
+    "targeting",
+    "hogmini"
+  ],
+  "author": "HogMini Team",
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
-    "@types/node": "^25.0.10",
-    "typescript": "^5.9.3"
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^5.0.0"
   }
 }

@@ -38,6 +38,7 @@ node_modules
 dist/
 # vercel
 .vercel
+personaldocs/
 
 # typescript
 *.tsbuildinfo
